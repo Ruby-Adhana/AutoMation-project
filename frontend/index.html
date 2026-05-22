@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Library Management System</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #f2f2f2;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: darkblue;
+    }
+
+    .box {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    select,
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: blue;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th,
+    td {
+      border: 1px solid gray;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background: blue;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Library Management System</h1>
+
+  <div class="box">
+
+    <input type="text" id="searchBox" placeholder="Search Book..."
+      onkeyup="searchBook()">
+
+    <label>Select Book</label>
+
+    <select id="bookSelect"></select>
+
+    <label>Author</label>
+    <input type="text" id="author" readonly>
+
+    <label>Status</label>
+    <select id="status">
+      <option>Available</option>
+      <option>Not Available</option>
+      <option>Issued</option>
+    </select>
+
+    <label>Issue Days</label>
+    <input type="number" id="days">
+
+    <label>Student Name</label>
+    <input type="text" id="student">
+
+    <label>Class</label>
+    <input type="text" id="className">
+
+    <button onclick="addBook()">Add Record</button>
+
+  </div>
+
+  <table>
+
+    <thead>
+      <tr>
+        <th>Book</th>
+        <th>Author</th>
+        <th>Status</th>
+        <th>Days</th>
+        <th>Student</th>
+        <th>Class</th>
+      </tr>
+    </thead>
+
+    <tbody id="tableData"></tbody>
+
+  </table>
+
+  <script>
+
+    const books = [
+
+      { name: "Atomic Habits", author: "James Clear" },
+      { name: "Rich Dad Poor Dad", author: "Robert Kiyosaki" },
+      { name: "The Alchemist", author: "Paulo Coelho" },
+      { name: "Think and Grow Rich", author: "Napoleon Hill" },
+      { name: "Deep Work", author: "Cal Newport" },
+      { name: "Clean Code", author: "Robert C. Martin" },
+      { name: "Ikigai", author: "Hector Garcia" },
+      { name: "Zero to One", author: "Peter Thiel" },
+      { name: "Wings of Fire", author: "A.P.J Abdul Kalam" },
+      { name: "The Power of Habit", author: "Charles Duhigg" },
+
+      { name: "Harry Potter", author: "J.K Rowling" },
+      { name: "The Hobbit", author: "J.R.R Tolkien" },
+      { name: "The Lord of the Rings", author: "J.R.R Tolkien" },
+      { name: "1984", author: "George Orwell" },
+      { name: "Animal Farm", author: "George Orwell" },
+      { name: "The Great Gatsby", author: "F. Scott Fitzgerald" },
+      { name: "To Kill a Mockingbird", author: "Harper Lee" },
+      { name: "Pride and Prejudice", author: "Jane Austen" },
+      { name: "The Catcher in the Rye", author: "J.D Salinger" },
+      { name: "Moby Dick", author: "Herman Melville" },
+
+      { name: "War and Peace", author: "Leo Tolstoy" },
+      { name: "Crime and Punishment", author: "Fyodor Dostoevsky" },
+      { name: "The Kite Runner", author: "Khaled Hosseini" },
+      { name: "The Da Vinci Code", author: "Dan Brown" },
+      { name: "Angels and Demons", author: "Dan Brown" },
+      { name: "Inferno", author: "Dan Brown" },
+      { name: "Digital Fortress", author: "Dan Brown" },
+      { name: "The Secret", author: "Rhonda Byrne" },
+      { name: "The Monk Who Sold His Ferrari", author: "Robin Sharma" },
+      { name: "Who Will Cry When You Die", author: "Robin Sharma" },
+
+      { name: "Sapiens", author: "Yuval Noah Harari" },
+      { name: "Homo Deus", author: "Yuval Noah Harari" },
+      { name: "The Psychology of Money", author: "Morgan Housel" },
+      { name: "Do Epic Shit", author: "Ankur Warikoo" },
+      { name: "Rework", author: "Jason Fried" },
+      { name: "Start With Why", author: "Simon Sinek" },
+      { name: "Leaders Eat Last", author: "Simon Sinek" },
+      { name: "Steve Jobs", author: "Walter Isaacson" },
+      { name: "Elon Musk", author: "Walter Isaacson" },
+      { name: "Think Like a Monk", author: "Jay Shetty" },
+
+      { name: "The Subtle Art of Not Giving a F", author: "Mark Manson" },
+      { name: "Everything is F", author: "Mark Manson" },
+      { name: "Can’t Hurt Me", author: "David Goggins" },
+      { name: "The 5 AM Club", author: "Robin Sharma" },
+      { name: "Eat That Frog", author: "Brian Tracy" },
+      { name: "The Intelligent Investor", author: "Benjamin Graham" },
+      { name: "The Lean Startup", author: "Eric Ries" },
+      { name: "Hooked", author: "Nir Eyal" },
+      { name: "The One Thing", author: "Gary Keller" },
+      { name: "The Four Agreements", author: "Don Miguel Ruiz" }
+
+    ];
+
+    while (books.length < 100) {
+      books.push({
+        name: "Book " + (books.length + 1),
+        author: "Author " + (books.length + 1)
+      });
+    }
+
+    const select = document.getElementById("bookSelect");
+
+    function loadBooks(bookArray) {
+
+      select.innerHTML = "";
+
+      bookArray.forEach(book => {
+
+        let option = document.createElement("option");
+
+        option.value = book.name;
+        option.text = book.name;
+
+        select.appendChild(option);
+
+      });
+
+      updateAuthor();
+    }
+
+    loadBooks(books);
+
+    function updateAuthor() {
+
+      const selectedBook =
+        books.find(book => book.name === select.value);
+
+      document.getElementById("author").value =
+        selectedBook.author;
+    }
+
+    select.addEventListener("change", updateAuthor);
+
+    function searchBook() {
+
+      const search =
+        document.getElementById("searchBox")
+        .value.toLowerCase();
+
+      const filteredBooks = books.filter(book =>
+        book.name.toLowerCase().includes(search)
+      );
+
+      loadBooks(filteredBooks);
+
+    }
+
+    function addBook() {
+
+      const book = select.value;
+      const author = document.getElementById("author").value;
+      const status = document.getElementById("status").value;
+      const days = document.getElementById("days").value;
+      const student = document.getElementById("student").value;
+      const className = document.getElementById("className").value;
+
+      const row = `
+        <tr>
+          <td>${book}</td>
+          <td>${author}</td>
+          <td>${status}</td>
+          <td>${days}</td>
+          <td>${student}</td>
+          <td>${className}</td>
+        </tr>
+      `;
+
+      document.getElementById("tableData")
+        .innerHTML += row;
+
+    }
+
+  </script>
+
+</body>
+
+</html>
