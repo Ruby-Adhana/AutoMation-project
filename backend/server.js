@@ -8,10 +8,10 @@ app.use(cors());
 app.use(express.json());
 
 const db = mysql.createConnection({
-    host: 'YOUR-RDS-ENDPOINT',
+    host: 'db-ferrari.cdya8sowa2t3.ap-south-1.rds.amazonaws.com',
     user: 'admin',
-    password: 'password',
-    database: 'librarydb'
+    password: '123456789',
+    database: 'db-ferrari'
 });
 
 db.connect((err) => {
